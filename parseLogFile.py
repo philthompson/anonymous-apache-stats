@@ -1,6 +1,8 @@
 import sys
 import re
 import datetime
+import hashlib
+import base64
 
 # apache's "combined" format
 #
@@ -48,10 +50,18 @@ with open(sys.argv[1], 'r') as f:
 		else:
 			date_time += tz_timedelta
 
+		# random salt generated with "tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32"
+		visitor_day_id = hashlib.pbkdf2_hmac('sha256', "%s %s %s" % (date, ip, useragent), '3PXVwTKdgYvlko38Z5BameWSut2FKINm', 100000)
+		# convert to base64, and truncate to 4 characters:
+		# 4 base64 characters has a space of 16 million possibilities, which is
+		#   large enough to avoid collisions for our purposes yet should be
+		#   small enough to add uncertainty when brute-forcing the ip+useragent
+		visitor_day_id = base64.b64encode(visitor_day_id)[0:4]
+
 		print("-----")
-		print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
-		print("%sZ %s %s %s %s %s" % (date_time.isoformat(), verb, uri, proto, resp_code, resp_size))
-		print("orig: %s" % (line))
+		#print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
+		print("%sZ %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size))
+		print("orig: %s" % (line.strip()))
 		print("-----")
 		lines += 1
 		if lines > 5:
