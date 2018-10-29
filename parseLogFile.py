@@ -3,6 +3,7 @@ import re
 import datetime
 import hashlib
 import base64
+import urllib.parse
 
 # this is intended to be run with python 3
 
@@ -60,9 +61,14 @@ with open(sys.argv[1], 'r') as f:
 		#   small enough to add uncertainty when brute-forcing the ip+useragent
 		visitor_day_id = base64.b64encode(visitor_day_id).decode('utf8')[0:4]
 
+		# use tld and one domain label to the left of that for referrer domain
+		# drop port from the hostname if one is present... probably won't be
+		referrer_domain = urllib.parse.urlparse(referrer).netloc.split(':')[0]
+		referrer_domain = '.'.join(referrer_domain.split(".")[-2:])
+
 		print("-----")
 		#print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
-		print("%sZ %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size))
+		print("%sZ %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain))
 		print("orig: %s" % (line.strip()))
 		print("-----")
 		lines += 1
