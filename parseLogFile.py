@@ -10,7 +10,7 @@ import urllib.parse
 # apache's "combined" format
 #
 # this script's gosal for output:
-# date-time, visitor-day-id, http-verb, uri, proto, resp-code, resp-size, referrer-domain, search-engine, search-engine-keywords, platform
+# date-time, visitor-day-id, http-verb, uri, proto, resp-code, resp-size, referrer-domain, search-engine, search-engine-keywords, platform-os, platform-form-factor
 
 regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)"$'
 
@@ -135,10 +135,39 @@ with open(sys.argv[1], 'r') as f:
 		#   to not URL-decode the search engine keywords
 		#search_engine_keywords = urllib.parse.unquote(search_engine_keywords)
 
+		platform = 'unk'
+		form_factor = 'non-mobile'
+
+		if 'Windows NT 10.' in useragent:
+			platform = 'windows-10'
+		elif 'Windows NT 6.1' in useragent:
+			platform = 'windows-7'
+		elif 'Windows NT 6.0' in useragent:
+			platform = 'windows-vista'
+		elif 'Windows NT 6.' in useragent:
+			platform = 'windows-8'
+		if 'Windows NT 5.1' in useragent or 'Windows NT 5.2' in useragent:
+			platform = 'windows-xp'
+		elif 'Windows NT ' in useragent:
+			platforms = 'windows-other'
+		elif 'Android' in useragent and 'Mobile' in useragent:
+			platform = 'android'
+			form_factor = 'mobile'
+		# if Linux and not Android
+		elif 'Linux' in useragent:
+			platform = 'linux'
+		elif 'iPad;' in useragent and ' like Mac OS X)' in useragent:
+			platform = 'ipad'
+			form_factor = 'mobile'
+		elif 'iPhone;' in useragent and ' like Mac OS X)' in useragent:
+			platform = 'iphone'
+			form_factor = 'mobile'
+		elif 'Mac OS X 10_' in useragent:
+			platform = 'macos'
 
 		print("-----")
 		#print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
-		print("%sZ %s %s %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain, search_engine, search_engine_keywords))
+		print("%sZ %s %s %s %s %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain, search_engine, search_engine_keywords, platform, form_factor))
 		print("orig: %s" % (line.strip()))
 		print("-----")
 		lines += 1
