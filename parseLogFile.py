@@ -138,18 +138,8 @@ with open(sys.argv[1], 'r') as f:
 		platform = 'unk'
 		form_factor = 'non-mobile'
 
-		if 'Windows NT 10.' in useragent:
-			platform = 'windows-10'
-		elif 'Windows NT 6.1' in useragent:
-			platform = 'windows-7'
-		elif 'Windows NT 6.0' in useragent:
-			platform = 'windows-vista'
-		elif 'Windows NT 6.' in useragent:
-			platform = 'windows-8'
-		if 'Windows NT 5.1' in useragent or 'Windows NT 5.2' in useragent:
-			platform = 'windows-xp'
-		elif 'Windows NT ' in useragent:
-			platforms = 'windows-other'
+		if 'Windows NT ' in useragent:
+			platform = 'windows'
 		elif 'Android' in useragent and 'Mobile' in useragent:
 			platform = 'android'
 			form_factor = 'mobile'
