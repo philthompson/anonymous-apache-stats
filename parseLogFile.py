@@ -63,12 +63,82 @@ with open(sys.argv[1], 'r') as f:
 
 		# use tld and one domain label to the left of that for referrer domain
 		# drop port from the hostname if one is present... probably won't be
-		referrer_domain = urllib.parse.urlparse(referrer).netloc.split(':')[0]
-		referrer_domain = '.'.join(referrer_domain.split(".")[-2:])
+		referrer_parse = urllib.parse.urlparse(referrer)
+		referrer_domain = '.'.join(referrer_parse.netloc.split(':')[0].split(".")[-2:]).lower()
+
+		search_engine = 'unk'
+		search_engine_keywords = '-'
+		if referrer_domain == '':
+			search_engine = 'None'
+		elif referrer_domain == 'google.com':
+			search_engine = 'google'
+			# same keywords parsing as Bing
+			if referrer_parse.path.lower() == '/search' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('q='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'bing.com':
+			search_engine = 'bing'
+			# same keywords parsing as Google
+			if referrer_parse.path.lower() == '/search' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('q='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'yahoo.com':
+			search_engine = 'yahoo'
+			# almost the same keywords parsing as Google and Bing
+			if referrer_parse.path.lower() == '/search' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('p='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'duckduckgo.com':
+			search_engine = 'duckduckgo'
+			print(referrer_parse)
+			# almost the same keywords parsing as Google and Bing
+			if referrer_parse.path.lower() == '/' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('q='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'ask.com':
+			search_engine = 'ask'
+			print(referrer_parse)
+			# almost the same keywords parsing as Google and Bing
+			if referrer_parse.path.lower() == '/web' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('q='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'aol.com':
+			search_engine = 'aol'
+			print(referrer_parse)
+			# almost the same keywords parsing as Google and Bing
+			if referrer_parse.path.lower() == '/aol/search' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('q='):
+						search_engine_keywords = param[2:]
+						break
+		elif referrer_domain == 'baidu.com':
+			search_engine = 'baidu'
+			print(referrer_parse)
+			# almost the same keywords parsing as Google and Bing
+			if referrer_parse.path.lower() == '/s' and referrer_parse.query:
+				for param in referrer_parse.query.split('&'):
+					if param.startswith('wd='):
+						search_engine_keywords = param[3:].replace('%20', '+')
+						break
+
+		# since the output is space-delimited, the simplest option for now is
+		#   to not URL-decode the search engine keywords
+		#search_engine_keywords = urllib.parse.unquote(search_engine_keywords)
+
 
 		print("-----")
 		#print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
-		print("%sZ %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain))
+		print("%sZ %s %s %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain, search_engine, search_engine_keywords))
 		print("orig: %s" % (line.strip()))
 		print("-----")
 		lines += 1
