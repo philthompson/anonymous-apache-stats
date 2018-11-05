@@ -96,7 +96,7 @@ with open(sys.argv[1], 'r') as f:
 						break
 		elif referrer_domain == 'duckduckgo.com':
 			search_engine = 'duckduckgo'
-			print(referrer_parse)
+			#print(referrer_parse)
 			# almost the same keywords parsing as Google and Bing
 			if referrer_parse.path.lower() == '/' and referrer_parse.query:
 				for param in referrer_parse.query.split('&'):
@@ -105,7 +105,7 @@ with open(sys.argv[1], 'r') as f:
 						break
 		elif referrer_domain == 'ask.com':
 			search_engine = 'ask'
-			print(referrer_parse)
+			#print(referrer_parse)
 			# almost the same keywords parsing as Google and Bing
 			if referrer_parse.path.lower() == '/web' and referrer_parse.query:
 				for param in referrer_parse.query.split('&'):
@@ -114,7 +114,7 @@ with open(sys.argv[1], 'r') as f:
 						break
 		elif referrer_domain == 'aol.com':
 			search_engine = 'aol'
-			print(referrer_parse)
+			#print(referrer_parse)
 			# almost the same keywords parsing as Google and Bing
 			if referrer_parse.path.lower() == '/aol/search' and referrer_parse.query:
 				for param in referrer_parse.query.split('&'):
@@ -123,7 +123,7 @@ with open(sys.argv[1], 'r') as f:
 						break
 		elif referrer_domain == 'baidu.com':
 			search_engine = 'baidu'
-			print(referrer_parse)
+			#print(referrer_parse)
 			# almost the same keywords parsing as Google and Bing
 			if referrer_parse.path.lower() == '/s' and referrer_parse.query:
 				for param in referrer_parse.query.split('&'):
@@ -155,11 +155,11 @@ with open(sys.argv[1], 'r') as f:
 		elif 'Mac OS X 10_' in useragent:
 			platform = 'macos'
 
-		print("-----")
+		#print("-----")
 		#print("ip: %s, date: %s, time: %s, time_zone: %s, iso_date: %s, verb: %s, uri: %s, proto: %s, resp_code: %s, resp_size: %s, referrer: %s, useragent: %s" % (ip, date, time, time_zone, date_time.isoformat(), verb, uri, proto, resp_code, resp_size, referrer, useragent))
 		print("%sZ %s %s %s %s %s %s %s %s %s %s %s" % (date_time.isoformat(), visitor_day_id, verb, uri, proto, resp_code, resp_size, referrer_domain, search_engine, search_engine_keywords, platform, form_factor))
-		print("orig: %s" % (line.strip()))
-		print("-----")
-		lines += 1
-		if lines > 5:
-			sys.exit(0)
+		#print("orig: %s" % (line.strip()))
+		#print("-----")
+		#lines += 1
+		#if lines > 5:
+		#	sys.exit(0)
