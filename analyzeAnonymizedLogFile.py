@@ -2,12 +2,18 @@ import sys
 import csv
 import datetime
 import calendar
+import re
 
 # number of views by day
 
 # number of unique visitors by day
 
 # articles
+
+# number of visitors by article by day
+
+# top 10 most visitors for an article across all days:
+#   "2018-11-01 article A: 40 visitors, 2018-11-05 article B: 36 visitors, ...")
 
 # top 10 articles: total unique visitors
 # (full list at bottom of output)
@@ -47,10 +53,14 @@ field_names = [
 	'platform-os', 'platform-form-factor'
 ]
 
+article_uri_pattern = re.compile("^/20[0-9][0-9]/.+\.html$")
+
 csv_reader = csv.DictReader(sys.stdin, fieldnames=field_names, delimiter=' ')
 
 view_visitors_by_day = dict()
 views_by_day = dict()
+
+view_visitors_by_article_by_day = dict()
 
 all_visitors_by_day = dict()
 
@@ -66,10 +76,18 @@ for row in csv_reader:
 			view_visitors_by_day[date] = dict()
 		view_visitors_by_day[date][row['visitor-day-id']] = None
 
+		# consider the home page "/" as an article
+		if row['uri'] == '/' or row['uri'].lower() == '/index.html' or article_uri_pattern.match(row['uri']):
+			if not date in view_visitors_by_article_by_day:
+				view_visitors_by_article_by_day[date] = dict()
+			if not row['uri'] in view_visitors_by_article_by_day[date]:
+				view_visitors_by_article_by_day[date][row['uri']] = dict()
+			view_visitors_by_article_by_day[date][row['uri']][row['visitor-day-id']] = None
+
 	if not date in all_visitors_by_day:
 		all_visitors_by_day[date] = dict()
 	all_visitors_by_day[date][row['visitor-day-id']] = None
-	print("at %s (%s) saw %s" % (date, row['date-time'], row['visitor-day-id']))
+	#print("at %s (%s) saw %s" % (date, row['date-time'], row['visitor-day-id']))
 
 print("Successful page views by day:")
 for date in sorted(views_by_day):
@@ -87,4 +105,25 @@ print("Number of visitors with at least one HTTP request by day:")
 for date in sorted(all_visitors_by_day):
 	day_name = get_weekday_from_iso_date(date)
 	print("%s %s - %d" % (day_name, date, len(all_visitors_by_day[date])))
+print("")
+
+article_days = dict()
+
+print("Unique visitors per article by day:")
+for date in sorted(view_visitors_by_article_by_day):
+	day_name = get_weekday_from_iso_date(date)
+	d = dict()
+	for article in view_visitors_by_article_by_day[date]:
+		d[article] = len(view_visitors_by_article_by_day[date][article])
+	# thanks to https://stackoverflow.com/a/20948781
+	day_article_visitors = [(k, d[k]) for k in sorted(d, key=d.get, reverse=True)]
+	for article, visitors in day_article_visitors:
+		article_day = "%s %s - %s" % (day_name, date, article)
+		print("%s: %d" % (article_day, visitors))
+		article_days[article_day] = visitors
+print("")
+
+print("Top 10 articles by unique visitors by day:")
+for article_day in sorted(article_days, key=article_days.get, reverse=True)[0:10]:
+	print("%s: %d" % (article_day, article_days[article_day]))
 print("")
