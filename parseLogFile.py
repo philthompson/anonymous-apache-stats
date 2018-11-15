@@ -12,6 +12,14 @@ import urllib.parse
 # this script's gosal for output:
 # date-time, visitor-day-id, http-verb, uri, proto, resp-code, resp-size, referrer-domain, search-engine, search-engine-keywords, platform-os, platform-form-factor
 
+ips_to_drop = []
+useragent_contains_to_drop = []
+for arg_val in sys.argv[2:]:
+	if arg_val.startswith("ips_to_drop="):
+		ips_to_drop = [x.lower() for x in arg_val[12:].split(',')]
+	elif arg_val.startswith("useragent_contains_to_drop="):
+		useragent_contains_to_drop = arg_val[27:].split(',')
+
 regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)"$'
 
 lines = 0
@@ -37,6 +45,17 @@ with open(sys.argv[1], 'r') as f:
 		resp_size = match.group(9)
 		referrer = match.group(10)
 		useragent = match.group(11)
+
+		if ip.lower() in ips_to_drop:
+			continue
+
+		found_ua_to_drop = False
+		for ua_to_drop in useragent_contains_to_drop:
+			if ua_to_drop in useragent:
+				found_ua_to_drop = True
+				break
+		if found_ua_to_drop:
+			continue
 
 		date_time = datetime.datetime.strptime("%s %s" % (date, time), "%d/%b/%Y %H:%M:%S")
 
