@@ -3,7 +3,7 @@ import re
 import datetime
 import hashlib
 import base64
-import urllib.parse
+import urlparse
 
 # this is intended to be run with python 3
 
@@ -82,7 +82,7 @@ with open(sys.argv[1], 'r') as f:
 
 		# use tld and one domain label to the left of that for referrer domain
 		# drop port from the hostname if one is present... probably won't be
-		referrer_parse = urllib.parse.urlparse(referrer)
+		referrer_parse = urlparse.urlparse(referrer)
 		referrer_domain = '.'.join(referrer_parse.netloc.split(':')[0].split(".")[-2:]).lower()
 
 		search_engine = 'unk'
@@ -152,7 +152,7 @@ with open(sys.argv[1], 'r') as f:
 
 		# since the output is space-delimited, the simplest option for now is
 		#   to not URL-decode the search engine keywords
-		#search_engine_keywords = urllib.parse.unquote(search_engine_keywords)
+		#search_engine_keywords = urlparse.unquote(search_engine_keywords)
 
 		platform = 'unk'
 		form_factor = 'non-mobile'

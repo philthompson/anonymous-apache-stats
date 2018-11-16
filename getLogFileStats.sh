@@ -23,7 +23,7 @@ then
 	else
 		echo "Anonymized log file [${OUT_FILE}] already exists"
 		echo "Add a 'backup-existing' arg and try again, or delete/rename it, or just run:"
-		echo "    \"zcat '${OUT_FILE}' | python3 analyzeAnonymizedLogFile.py\""
+		echo "    \"zcat '${OUT_FILE}' | python analyzeAnonymizedLogFile.py\""
 		exit 1
 	fi
 fi
@@ -31,10 +31,10 @@ fi
 # pass all remaining arguments to the parse script
 if [[ "$(echo "${1}" | rev | cut -c 1-3 | rev)" == ".gz" ]]
 then
-	python3 parseLogFile.py <(zcat "${1}") "$@"
+	python parseLogFile.py <(zcat "${1}") "$@"
 else
-	python3 parseLogFile.py "${1}" "$@"
+	python parseLogFile.py "${1}" "$@"
 fi | gzip > "${OUT_FILE}"
 
 
-zcat "${OUT_FILE}" | python3 analyzeAnonymizedLogFile.py
+zcat "${OUT_FILE}" | python analyzeAnonymizedLogFile.py
