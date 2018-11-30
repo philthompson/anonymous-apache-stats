@@ -2,10 +2,11 @@ import sys
 import re
 import datetime
 import hashlib
-import base64
+import binascii
 import urlparse
+import random
 
-# this is intended to be run with python 3
+# this is intended to be run with python 2.7
 
 # apache's "combined" format
 #
@@ -23,6 +24,16 @@ for arg_val in sys.argv[2:]:
 regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)"$'
 
 lines = 0
+
+srand = random.SystemRandom()
+
+# create random salt for today's random visitor day ID lookup table
+daily_pbkdf_salt = hex(srand.getrandbits(128))[2:-1]
+
+# start randomness generator using SHA256 for visitor day ID lookup table
+sha256 = hashlib.sha256(daily_pbkdf_salt)
+
+visitor_day_id_table = dict()
 
 with open(sys.argv[1], 'r') as f:
 	for line in f:
@@ -72,13 +83,23 @@ with open(sys.argv[1], 'r') as f:
 		else:
 			date_time += tz_timedelta
 
-		# random salt generated with "tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32"
-		visitor_day_id = hashlib.pbkdf2_hmac('sha256', ("%s %s %s" % (date, ip, useragent)).encode('utf8'), '3PXVwTKdgYvlko38Z5BameWSut2FKINm'.encode('utf8'), 100000)
-		# convert to base64, and truncate to 4 characters:
-		# 4 base64 characters has a space of 16 million possibilities, which is
+
+		visitor_day_id = hashlib.pbkdf2_hmac('sha256', ("%s %s %s" % (date, ip, useragent)).encode('utf8'), daily_pbkdf_salt, 10000)
+		# convert to hex, and truncate to 6 characters:
+		# 6 hex characters has a space of 16 million possibilities, which is
 		#   large enough to avoid collisions for our purposes yet should be
 		#   small enough to add uncertainty when brute-forcing the ip+useragent
-		visitor_day_id = base64.b64encode(visitor_day_id).decode('utf8')[0:4]
+		visitor_day_id = binascii.hexlify(visitor_day_id)[-6:]
+
+		# create a random 6-digit hex value for the ID if it doesn't already
+		#   exist by providing the SHA-256 hash with more random data
+		if not visitor_day_id in visitor_day_id_table:
+			sha256.update(visitor_day_id)
+			sha256.update(str(srand.getrandbits(32)))
+			visitor_day_id_table[visitor_day_id] = sha256.hexdigest()[0:6]
+
+		# set the ID to the random one
+		visitor_day_id = visitor_day_id_table[visitor_day_id]
 
 		# use tld and one domain label to the left of that for referrer domain
 		# drop port from the hostname if one is present... probably won't be
