@@ -5,21 +5,52 @@ import hashlib
 import binascii
 import urlparse
 import random
+import json
 
 # this is intended to be run with python 2.7
+# for testing
+# python parseLogFile.py <(zcat somelog.gz) backup-existing ips_to_drop=a.b.c.d useragent_json_file_to_drop=crawler-user-agents-47a1419.json
 
 # apache's "combined" format
 #
 # this script's gosal for output:
 # date-time, visitor-day-id, http-verb, uri, proto, resp-code, resp-size, referrer-domain, search-engine, search-engine-keywords, platform-os, platform-form-factor
 
+#
+# the JSON useragent file is from:
+# https://github.com/monperrus/crawler-user-agents/blob/master/crawler-user-agents.json
+#
+# it is expected to look like:
+#
+# [
+#   {
+#     "pattern": "Googlebot\\/",
+#     "url": "http://www.google.com/bot.html",
+#     "instances": [
+#       "Googlebot/2.1 (+http://www.google.com/bot.html)",
+#       ...
+#     ]
+#   },
+#   ...
+# ]
+#
+
 ips_to_drop = []
-useragent_contains_to_drop = []
+useragent_re_to_drop = []
+useragent_json_files_to_drop = []
 for arg_val in sys.argv[2:]:
 	if arg_val.startswith("ips_to_drop="):
-		ips_to_drop = [x.lower() for x in arg_val[12:].split(',')]
-	elif arg_val.startswith("useragent_contains_to_drop="):
-		useragent_contains_to_drop = arg_val[27:].split(',')
+		ips_to_drop.extend([x.lower() for x in arg_val[12:].split(',')])
+	elif arg_val.startswith("useragent_re_to_drop="):
+		useragent_re_to_drop.extend(arg_val[21:].split(','))
+	elif arg_val.startswith("useragent_json_file_to_drop="):
+		useragent_json_files_to_drop.extend(arg_val[28:].split(','))
+
+for json_file in useragent_json_files_to_drop:
+	with open(json_file, 'r') as f:
+		json_file_obj = json.load(f)
+		for pattern_obj in json_file_obj:
+			useragent_re_to_drop.append(pattern_obj['pattern'])
 
 regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)"$'
 
@@ -61,8 +92,11 @@ with open(sys.argv[1], 'r') as f:
 			continue
 
 		found_ua_to_drop = False
-		for ua_to_drop in useragent_contains_to_drop:
-			if ua_to_drop in useragent:
+		for ua_to_drop in useragent_re_to_drop:
+			ua_drop_match = re.search(ua_to_drop, useragent)
+			if not ua_drop_match:
+				continue
+			else:
 				found_ua_to_drop = True
 				break
 		if found_ua_to_drop:

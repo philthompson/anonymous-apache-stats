@@ -5,7 +5,7 @@
 #   combined apache log file parsing and anonymization
 #
 # example:
-#   ./getLogFileStats.sh ips_to_drop=a.b.c.d,e.f.g.h useragent_contains_to_drop=Googlebot,SomethingElse
+#   ./getLogFileStats.sh <log_file> backup-existing ips_to_drop=a.b.c.d,e.f.g.h useragent_json_file_to_drop=crawler-user-agents-47a1419.json
 
 if [[ ! -s "${1}" ]]
 then
