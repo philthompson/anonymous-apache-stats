@@ -52,7 +52,7 @@ for json_file in useragent_json_files_to_drop:
 		for pattern_obj in json_file_obj:
 			useragent_re_to_drop.append(pattern_obj['pattern'])
 
-regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)"$'
+regex = '^([^ ]+) [^ ]+ [^ ]+ \[([^:]+):([^ ]+) ([^\]]+)\] "([^ ]+) ([^ ]+) ([^ ]+)" ([^ ]+) ([^ ]+) "([^"]+)" "([^"]+)" [^ ]+ [^ ]+$'
 
 lines = 0
 
