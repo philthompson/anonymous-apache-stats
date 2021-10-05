@@ -53,7 +53,11 @@ field_names = [
 	'platform-os', 'platform-form-factor'
 ]
 
-article_uri_pattern = re.compile("^/20[0-9][0-9]/.+\.html$")
+# as of October 2021, consider any .html file an "article"
+# (gallery pages do not have same URL pattern as articles, so
+#   we need to use a more general pattern here)
+#article_uri_pattern = re.compile("^/20[0-9][0-9]/.+\.html$")
+article_uri_pattern = re.compile("^.+\.html$")
 
 csv_reader = csv.DictReader(sys.stdin, fieldnames=field_names, delimiter=' ')
 
