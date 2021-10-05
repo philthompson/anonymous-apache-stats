@@ -138,12 +138,22 @@ with open(sys.argv[1], 'r') as f:
 		# use tld and one domain label to the left of that for referrer domain
 		# drop port from the hostname if one is present... probably won't be
 		referrer_parse = urlparse.urlparse(referrer)
+
+		# maybe at somepoint the referrer header dropped the scheme (http:// or https://)
+		# so first test netloc, and if that's blank, use path instead
 		referrer_domain = '.'.join(referrer_parse.netloc.split(':')[0].split(".")[-2:]).lower()
+		if referrer_parse.netloc == '':
+			referrer_domain = '.'.join(referrer_parse.path.split(':')[0].split(".")[-2:]).lower()
 
 		search_engine = 'unk'
 		search_engine_keywords = '-'
 		if referrer_domain == '':
 			search_engine = 'None'
+			# since we are now parsing either the referrer's netloc or path, this shouldn't be
+			#   blank anymore (a referrer of '-' is passed on as the referrer) but just in
+			#   case let's ensure it's set to '-' if blank
+			referrer_domain = '-'
+			#print("===== referrer_domain is blank, this was referrer: [%s] referrer_parse: [%s]" % referrer, referrer_parse)
 		elif referrer_domain == 'google.com':
 			search_engine = 'google'
 			# same keywords parsing as Bing
