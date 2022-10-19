@@ -9,7 +9,7 @@ import json
 
 # this is intended to be run with python 2.7
 # for testing
-# python parseLogFile.py <(zcat somelog.gz) backup-existing ips_to_drop=a.b.c.d useragent_json_file_to_drop=crawler-user-agents-28723a26.json
+# python parseLogFile.py <(zcat somelog.gz) backup-existing ips_to_drop=a.b.c.d useragent_json_file_to_drop=crawler-user-agents-2f61a5ff.json
 
 # apache's "combined" format
 #

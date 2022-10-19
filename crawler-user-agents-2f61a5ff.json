@@ -1157,7 +1157,8 @@
       "Mozilla/5.0 (compatible; AhrefsBot/5.2; News; +http://ahrefs.com/robot/)",
       "Mozilla/5.0 (compatible; AhrefsBot/5.2; +http://ahrefs.com/robot/)",
       "Mozilla/5.0 (compatible; AhrefsSiteAudit/5.2; +http://ahrefs.com/robot/)",
-      "Mozilla/5.0 (compatible; AhrefsBot/6.1; News; +http://ahrefs.com/robot/)"
+      "Mozilla/5.0 (compatible; AhrefsBot/6.1; News; +http://ahrefs.com/robot/)",
+      "Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)"
     ]
   }
   ,
@@ -4866,5 +4867,70 @@
       "AppEngine-Google; (+http:\/\/code.google.com\/appengine; appid: s~virustotalcloud)"
     ],
     "url": "https://www.virustotal.com/gui/home/url"
+  },
+  {
+    "pattern": "(^| )PTST\\/",
+    "addition_date": "2021/12/05",
+    "instances": [
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36 PTST/211202.211915",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0 PTST/211202.211915"
+    ],
+    "url": "https://www.webpagetest.org"
+  },
+  {
+    "pattern": "minicrawler",
+    "addition_date": "2022/01/12",
+    "instances": [
+      "Testomatobot/1.0 (Linux x86_64; +https://www.testomato.com/testomatobot) minicrawler/5.2.2"
+    ],
+    "url": "https://www.testomato.com/bot"
+  },
+  {
+    "pattern": "Cookiebot",
+    "addition_date": "2022/01/23",
+    "url": "https://www.cookiebot.com/",
+    "instances": [
+      "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko; compatible; Cookiebot/1.0; +http://cookiebot.com/) Chrome/97.0.4692.71 Safari/537.36"
+    ]
+  },
+	{
+		"pattern": "trovitBot",
+		"addition_date": "2022/06/08",
+		"url": "http://www.trovit.com/bot.html",
+		"instances": [
+            "Mozilla/5.0 (compatible; trovitBot 1.0; +http://www.trovit.com/bot.html)"
+        ]
+	},
+  {
+    "pattern": "seostar\\.co",
+    "addition_date": "2022/08/04",
+    "url": "https://seostar.co/robot/",
+    "instances": [
+      "Mozilla/5.0 (compatible; Adsbot/3.1; +https://seostar.co/robot/)"
+    ]
+  },
+  {
+    "pattern": "IonCrawl",
+    "addition_date": "2022/08/04",
+    "url": "https://www.ionos.de/terms-gtc/faq-crawler-en",
+    "instances": [
+      "IonCrawl (https://www.ionos.de/terms-gtc/faq-crawler-en/)"
+    ]
+  },
+  {
+    "pattern": "SeekportBot",
+    "addition_date": "2022/10/17",
+    "url": "https://bot.seekport.com",
+    "instances": [
+      "Mozilla/5.0 (compatible; SeekportBot; +https://bot.seekport.com)"
+    ]
+  },
+  {
+    "pattern": "FreshpingBot",
+    "addition_date": "2022/10/17",
+    "url": "https://www.freshworks.com/website-monitoring/",
+    "instances": [
+      "FreshpingBot/1.0 (+https://freshping.io/)"
+    ]
   }
 ]
